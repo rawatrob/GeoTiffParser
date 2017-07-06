@@ -36,10 +36,12 @@ var x = parseInt(x);
 		var testPt = new Proj4js.Point(point[1],point[2]);
 		var x = Proj4js.transform(dest,source,testPt);
 		
+			alert(" Longitude "+ x.x +" Latitude "+ x.y);
+  		
   			console.log("--34--");
   		
   			console.log("--3--");
- 			console.log("----"+x.x);
+ 			console.log("----"+x);
      		console.log("-67890---");
 			console.log(parser.ImageToPCS(753,447));
 			//console.log(lr);
