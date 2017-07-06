@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8" />
+	<title>TIFF test</title>
+
+	<script src="js/testGeotiffParser.js"></script>
+	
+  	<script src="lib/lib/proj4js.js"></script>
+  <!-- 	<script src="https://svn.osgeo.org/metacrs/proj4js/trunk/lib/proj4js-compressed.js"></script> -->
+	<script language="javascript" src="lib/lz-string.js"></script>
+	<script data-main="js/GeotiffParser" src="lib/require.js"></script>
+	
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
+
+</head>
+<body onload="tiffImage();">
+
+<form name="tiff-parser" method="post" enctype="multipart/form-data" style="margin: 10% auto auto; text-align: center;">
+
+	<input type="file" name="tiff-file" id="tiff-file" accept="image/tif" required onchange="tiffImage();" />
+	<input type="button" name="parse" value="Parse TIFF" onclick="prepareTIFF();" />
+
+</form>
+
+<div style="display: block; max-width: 90%; margin: 10px auto; border: 1px dashed magenta; padding: 0px; background-color: #FFEEFF;position: relative;">
+<canvas id="tiff-image" style="max-width: 100%;">
+</canvas>
+<img src="pointer.png" id="pointer" style="position:absolute; width:50px;z-index: 999; top:0; display:none"/>
+<div>
+
+<script type="text/javascript">
+		"use strict";
+		var prepareTIFF = function(x,y) {
+
+			var files = document.getElementById( "tiff-file" ).files;
+			var file = files[0];
+
+			if (files.length < 1 || file.type !== 'image/tiff') {
+				return;
+			}
+
+			var reader = new FileReader();
+
+			reader.onload = function(e) {
+			console.log(x +"----xxx--------->")
+			console.log(y +"----yyyy--------->")
+			testGeotiffParser(e.target.result,x,y);
+			
+	};
+
+		reader.readAsArrayBuffer( file );
+	}
+	
+	var tiffImage = function(){
+	
+	
+			var files = document.getElementById( "tiff-file" ).files;
+			var file = files[0];
+
+			if (files.length < 1 || file.type !== 'image/tiff') {
+				return;
+			}
+
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				
+			var canvas = document.getElementById("tiff-image");
+			var canvasParent = canvas.parentNode;
+		var tiffCanvas = LoadGeotiffParser(e.target.result,canvas);
+	
+	
+			tiffCanvas.style.borderStyle = "solid";
+			canvasParent.replaceChild(tiffCanvas, canvas);
+			//var canvas = document.getElementById("tiff-image");
+			canvas.addEventListener("click", getPosition, false);};
+			reader.readAsArrayBuffer( file );
+	
+	}
+	
+	var getPosition = function(event) {
+
+	var canvas = document.getElementById("tiff-image");
+//pointer
+
+	var widthx = parseFloat(((window.innerWidth)-13.9)*9/10);
+	widthx = widthx; // -13.7;
+	var heightY =  widthx*900/1138;
+	var width = 1138/widthx; //421 //568
+	var height = 900/heightY;
+	var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var canvasX = 0;
+    var canvasY = 0;
+    var currentElement = this;
+do{	 totalOffsetX += currentElement.offsetLeft;
+      totalOffsetY += currentElement.offsetTop;
+    }
+    while(currentElement = currentElement.offsetParent)
+
+    canvasX = event.pageX - totalOffsetX;
+    canvasY = event.pageY - totalOffsetY;
+prepareTIFF(canvasX*width,canvasY*height);
+var pointer = document.getElementById("pointer");
+pointer.setAttribute("style", "z-index:100;display:block;position: absolute;top:"+(canvasY-40)+"px;left:"+(canvasX-20)+"px; width:40px");
+  //alert("x-d-"+ canvasX + "--y-" +canvasY );
+}
+	</script>
+</body>
+</html>
